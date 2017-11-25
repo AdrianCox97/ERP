@@ -31,7 +31,7 @@ VersionId,Version_ID,Copyright,Global_User_ID,Row_Time_Stamp
 
 Diagram
 DiagramId,Version_ID,VersionId,LastUpdate,CreateDate,ActiveModel,ActiveSubmodel,VSplitterPosition,X,Y,Width,Height,DiagramNameId,AuthorId,CompanyId,VersionNoId,CopyrightStringId,DefinitionId,UnificationOptionId,FileNameId,CopyrightYearStringId,DiagramName,CodePage,SignatureGUID,ReleaseName,Flags,Global_User_ID,Row_Time_Stamp
-1,1,800,11/25/2017 13:30:02G,11/14/2017 18:29:47G,1,1,180,0,0,0,0,57,58,59,60,59,0,61,57,0,Modelo-Inventario.DM1,1252,NULL,NULL,0,1,0
+1,1,800,11/25/2017 15:48:50G,11/14/2017 18:29:47G,1,1,180,0,0,0,0,57,58,59,60,59,0,61,57,0,Modelo-Inventario.DM1,1252,NULL,NULL,0,1,0
 
 Model
 DiagramId,ModelId,Model_ID,ModelType,PlatformId,NamePrefix,SpaceHandling,CaseHandling,GenPrimaryKey,GenAlternateKey,GenInversionEntry,GenForeignKey,Notation,ModelNameId,RowOverhead,TableOverhead,IndexOverhead,BlobOverhead,BlobBlockSize,Global_User_ID,Row_Time_Stamp
@@ -415,7 +415,7 @@ DiagramId,ModelId,EntityId,AttributeId,Attribute_ID,Entity_ID,UserDatatypeId,Rul
 1,1,53,30,696,77,0,0,0,0,175,175,0,0,0,0,16,0,100,-1,N,1,1,27,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1897,0
 1,1,60,15,740,84,0,0,0,0,158,158,0,0,158,158,14,1,-2,-1,N,0,0,7,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1941,0
 1,1,53,31,697,77,0,0,0,0,177,177,0,0,0,0,16,0,15,-1,N,1,1,28,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1898,0
-1,1,53,32,698,77,0,0,0,0,50,50,0,0,0,0,16,1,15,-1,N,1,1,29,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1899,0
+1,1,53,32,698,77,0,0,0,0,50,50,0,0,0,0,14,1,-2,-1,N,1,1,29,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1899,0
 1,1,53,33,699,77,0,0,0,0,188,188,0,0,0,0,16,1,100,-1,N,1,1,30,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1900,0
 1,1,54,1,701,78,0,0,0,0,189,189,0,0,0,0,14,0,-2,-1,Y,1,1,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1902,0
 1,1,53,34,700,77,0,0,0,0,219,219,0,0,219,219,14,0,-2,-1,N,0,0,31,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1901,0
@@ -1987,7 +1987,7 @@ Identity_Value_ID,Table_Name,Column_Name,Next_Valid_Value,Global_User_ID,Row_Tim
 14,Bound_Dictionary_Object,Bound_Dictionary_Object_ID,1,0,0
 15,CheckConstraints,CheckConstraints_ID,1,0,0
 16,Circular_Layout,Circular_Layout_ID,4,0,0
-17,ColorDefault,ColorDefault_ID,239,0,0
+17,ColorDefault,ColorDefault_ID,240,0,0
 18,Column_Usage,Column_Usage_ID,1,0,0
 19,Components_Layout,Components_Layout_ID,4,0,0
 20,Configuration_Option,Configuration_Option_ID,1,0,0
