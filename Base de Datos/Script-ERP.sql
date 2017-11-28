@@ -4,7 +4,7 @@
 -- Project :      Modelo-Inventario.DM1
 -- Author :       Adrian Cox
 --
--- Date Created : Sunday, November 26, 2017 21:14:32
+-- Date Created : Monday, November 27, 2017 19:29:48
 -- Target DBMS : MySQL 5.x
 --
 
@@ -23,6 +23,20 @@ CREATE TABLE Almacenes(
 
 
 -- 
+-- TABLE: Banco 
+--
+
+CREATE TABLE Banco(
+    BancoID    INT             AUTO_INCREMENT,
+    Nombre     VARCHAR(100),
+    RFC        VARCHAR(15),
+    PRIMARY KEY (BancoID)
+)
+;
+
+
+
+-- 
 -- TABLE: BitácoraERP 
 --
 
@@ -31,27 +45,9 @@ CREATE TABLE BitácoraERP(
     IdErroresERP     INT            NOT NULL,
     IdPerfiles       INT            NOT NULL,
     IdUsuarios       INT            NOT NULL,
-    Clave            VARCHAR(10)    NOT NULL,
     Timestamp        DATETIME,
     Acción           VARCHAR(20)    NOT NULL,
-    PRIMARY KEY (IdBitácoraERP, IdErroresERP, IdPerfiles, IdUsuarios, Clave)
-)
-;
-
-
-
--- 
--- TABLE: BitacoraProductos 
---
-
-CREATE TABLE BitacoraProductos(
-    ClaveBitacora    INT                      AUTO_INCREMENT,
-    Usuario          INT                      NOT NULL,
-    Observaciones    NATIONAL VARCHAR(700),
-    Tabla            VARCHAR(75)              NOT NULL,
-    Accion           VARCHAR(150)             NOT NULL,
-    Fecha            DATETIME                 NOT NULL,
-    PRIMARY KEY (ClaveBitacora)
+    PRIMARY KEY (IdBitácoraERP, IdErroresERP, IdPerfiles, IdUsuarios)
 )
 ;
 
@@ -103,6 +99,54 @@ CREATE TABLE Clientes(
 
 
 -- 
+-- TABLE: ConceptosNomina 
+--
+
+CREATE TABLE ConceptosNomina(
+    ConceptoID    INT            NOT NULL,
+    Concepto      VARCHAR(50),
+    PRIMARY KEY (ConceptoID)
+)
+;
+
+
+
+-- 
+-- TABLE: Cuenta 
+--
+
+CREATE TABLE Cuenta(
+    NumeroCuenta     INT            NOT NULL,
+    CuentaClave      VARCHAR(50),
+    Personal         VARCHAR(10),
+    NumeroTarjeta    INT,
+    Clave            VARCHAR(10)    NOT NULL,
+    BancoID          INT,
+    PRIMARY KEY (NumeroCuenta)
+)
+;
+
+
+
+-- 
+-- TABLE: CxC 
+--
+
+CREATE TABLE CxC(
+    IDCobrar      INT             AUTO_INCREMENT,
+    AtrasoPago    INT             NOT NULL,
+    Abono         FLOAT(8, 0)     NOT NULL,
+    Saldo         FLOAT(8, 0)     NOT NULL,
+    FechaPago     DATETIME        NOT NULL,
+    Plazo         VARCHAR(100)    NOT NULL,
+    IDDetalle     INT             NOT NULL,
+    PRIMARY KEY (IDCobrar)
+)
+;
+
+
+
+-- 
 -- TABLE: DetalleVenta 
 --
 
@@ -110,6 +154,7 @@ CREATE TABLE DetalleVenta(
     IDDetalle    INT            AUTO_INCREMENT,
     Cantidad     FLOAT(8, 0)    NOT NULL,
     Precio       FLOAT(8, 0)    NOT NULL,
+    Descuento    FLOAT(8, 0),
     Total        FLOAT(8, 0)    NOT NULL,
     IDVenta      INT            NOT NULL,
     ID           INT            NOT NULL,
@@ -151,15 +196,60 @@ CREATE TABLE ErroresERP(
 
 
 -- 
+-- TABLE: Estatus 
+--
+
+CREATE TABLE Estatus(
+    EstatusID      INT            AUTO_INCREMENT,
+    Descripcion    VARCHAR(20),
+    PRIMARY KEY (EstatusID)
+)
+;
+
+
+
+-- 
 -- TABLE: Incidencia 
 --
 
 CREATE TABLE Incidencia(
-    IncidenciaID        INT            AUTO_INCREMENT,
-    TipoIncidenciaID    INT            NOT NULL,
-    Clave               VARCHAR(10)    NOT NULL,
+    IncidenciaID        INT         AUTO_INCREMENT,
     Fecha               DATETIME,
-    PRIMARY KEY (IncidenciaID, TipoIncidenciaID, Clave)
+    TipoIncidenciaID    INT         NOT NULL,
+    PRIMARY KEY (IncidenciaID)
+)
+;
+
+
+
+-- 
+-- TABLE: Jornada 
+--
+
+CREATE TABLE Jornada(
+    JornadaID     INT            AUTO_INCREMENT,
+    Turno         VARCHAR(50),
+    HoraInicio    DATETIME,
+    HoraFin       DATETIME,
+    PRIMARY KEY (JornadaID)
+)
+;
+
+
+
+-- 
+-- TABLE: Movimientos 
+--
+
+CREATE TABLE Movimientos(
+    ClaveBitacora    INT                      AUTO_INCREMENT,
+    Usuario          INT                      NOT NULL,
+    Observaciones    NATIONAL VARCHAR(700),
+    Accion           VARCHAR(150)             NOT NULL,
+    Fecha            DATETIME                 NOT NULL,
+    Cantidad         INT                      NOT NULL,
+    ID               INT                      NOT NULL,
+    PRIMARY KEY (ClaveBitacora)
 )
 ;
 
@@ -171,17 +261,17 @@ CREATE TABLE Incidencia(
 
 CREATE TABLE Nomina(
     NominaID            INT            AUTO_INCREMENT,
-    FechaEmision        DATETIME,
     PeriodoID           INT            NOT NULL,
+    FechaEmision        DATETIME,
     Empresa             VARCHAR(50)    NOT NULL,
     Movimiento          VARCHAR(50)    NOT NULL,
     UltimoCambio        DATETIME       NOT NULL,
     Moneda              VARCHAR(20)    NOT NULL,
     TipoCambio          FLOAT(8, 0),
     Usuario             VARCHAR(10)    NOT NULL,
-    Estatus             VARCHAR(15)    NOT NULL,
     FechaCancelacion    DATETIME,
     FechaAlta           DATETIME       NOT NULL,
+    EstatusID           INT            NOT NULL,
     PRIMARY KEY (NominaID)
 )
 ;
@@ -194,8 +284,6 @@ CREATE TABLE Nomina(
 
 CREATE TABLE NominaDetalle(
     Renglon              INT             NOT NULL,
-    NominaID             INT             NOT NULL,
-    SucursalID           INT             NOT NULL,
     Importe              FLOAT(8, 0),
     Horas                FLOAT(8, 0),
     Referencia           VARCHAR(100)    NOT NULL,
@@ -204,9 +292,10 @@ CREATE TABLE NominaDetalle(
     IncidenciaID         INT,
     Saldo                FLOAT(8, 0),
     CantidadPendiente    FLOAT(8, 0),
-    TipoIncidenciaID     INT,
-    Clave                VARCHAR(10),
-    PRIMARY KEY (Renglon, NominaID, SucursalID)
+    NominaID             INT             NOT NULL,
+    SucursalID           INT             NOT NULL,
+    ConceptoID           INT             NOT NULL,
+    PRIMARY KEY (Renglon)
 )
 ;
 
@@ -220,10 +309,9 @@ CREATE TABLE Notificaciones(
     IdNotificación    CHAR(10)        NOT NULL,
     IdUsuarios        INT             NOT NULL,
     IdPerfiles        INT             NOT NULL,
-    Clave             VARCHAR(10)     NOT NULL,
     Contenido         VARCHAR(500)    NOT NULL,
     Leido             TINYINT         NOT NULL,
-    PRIMARY KEY (IdNotificación, IdUsuarios, IdPerfiles, Clave)
+    PRIMARY KEY (IdNotificación, IdUsuarios, IdPerfiles)
 )
 ;
 
@@ -276,14 +364,14 @@ CREATE TABLE PerfilesPermisos(
 --
 
 CREATE TABLE Periodo(
-    PeriodoID        INT            AUTO_INCREMENT,
-    TipoPeriodoID    INT            NOT NULL,
-    Anio             INT            NOT NULL,
-    Mes              INT            NOT NULL,
-    FechaInicio      DATETIME       NOT NULL,
-    FechaFin         DATETIME       NOT NULL,
-    Estatus          VARCHAR(15)    NOT NULL,
-    PRIMARY KEY (PeriodoID, TipoPeriodoID)
+    PeriodoID        INT         AUTO_INCREMENT,
+    Anio             INT         NOT NULL,
+    Mes              INT         NOT NULL,
+    FechaInicio      DATETIME    NOT NULL,
+    FechaFin         DATETIME    NOT NULL,
+    TipoPeriodoID    INT         NOT NULL,
+    EstatusID        INT         NOT NULL,
+    PRIMARY KEY (PeriodoID)
 )
 ;
 
@@ -326,10 +414,7 @@ CREATE TABLE Personal(
     FechaBaja                 DATETIME,
     Sueldo                    FLOAT(8, 0)     NOT NULL,
     SalarioDiarioIntegrado    FLOAT(8, 0)     NOT NULL,
-    Jornada                   VARCHAR(20)     NOT NULL,
     TipoContrato              VARCHAR(50)     NOT NULL,
-    NumeroCuenta              VARCHAR(20),
-    Banco                     VARCHAR(50),
     Direccion                 VARCHAR(100)    NOT NULL,
     NumeroExterior            VARCHAR(10)     NOT NULL,
     NumeroInterior            VARCHAR(10),
@@ -341,6 +426,8 @@ CREATE TABLE Personal(
     CodigoPostal              VARCHAR(15)     NOT NULL,
     Telefono                  VARCHAR(15),
     Correo                    VARCHAR(100),
+    EstatusID                 INT             NOT NULL,
+    JornadaID                 INT             NOT NULL,
     PRIMARY KEY (Clave)
 )
 ;
@@ -357,6 +444,7 @@ CREATE TABLE Productos(
     Descripcion       VARCHAR(500),
     PrecioUnitario    FLOAT(8, 0)     NOT NULL,
     PrecioMayoreo     FLOAT(8, 0)     NOT NULL,
+    Cantidad          INT             NOT NULL,
     Stock             FLOAT(8, 0)     NOT NULL,
     IDAlmacen         INT             NOT NULL,
     IDCategoria       INT             NOT NULL,
@@ -418,13 +506,13 @@ CREATE TABLE Sucursal(
     Pais                VARCHAR(100),
     CodigoPostal        VARCHAR(15),
     Telefono            VARCHAR(15),
-    Estatus             VARCHAR(15)     NOT NULL,
     FecchaAlta          DATETIME        NOT NULL,
     UltimoCambio        DATETIME        NOT NULL,
     PrecioEspecial      VARCHAR(20),
     CentroCostos        VARCHAR(10),
     AlmacenPrincipal    VARCHAR(10),
     FechaBaja           DATETIME,
+    EstatusID           INT             NOT NULL,
     PRIMARY KEY (SucursalID)
 )
 ;
@@ -467,10 +555,10 @@ CREATE TABLE TipoPeriodo(
 CREATE TABLE Usuarios(
     IdUsuarios       INT            AUTO_INCREMENT,
     IdPerfiles       INT            NOT NULL,
-    Clave            VARCHAR(10)    NOT NULL,
     NombreUsuario    VARCHAR(50)    NOT NULL,
     HashContra       VARCHAR(50)    NOT NULL,
-    PRIMARY KEY (IdUsuarios, IdPerfiles, Clave)
+    Clave            VARCHAR(10)    NOT NULL,
+    PRIMARY KEY (IdUsuarios, IdPerfiles)
 )
 ;
 
@@ -482,12 +570,12 @@ CREATE TABLE Usuarios(
 
 CREATE TABLE Vacaciones(
     ID                      INT            AUTO_INCREMENT,
-    Clave                   VARCHAR(10)    NOT NULL,
     FechaFin                DATETIME       NOT NULL,
     FechaInicio             DATETIME       NOT NULL,
     DiasTomados             INT            NOT NULL,
     DiasCorrespondientes    INT            NOT NULL,
-    PRIMARY KEY (ID, Clave)
+    Clave                   VARCHAR(10)    NOT NULL,
+    PRIMARY KEY (ID)
 )
 ;
 
@@ -499,7 +587,9 @@ CREATE TABLE Vacaciones(
 
 CREATE TABLE Venta(
     IDVenta         INT            AUTO_INCREMENT,
-    Fehca           DATETIME       NOT NULL,
+    FechaCompra     DATETIME       NOT NULL,
+    FechaCobro      DATETIME       NOT NULL,
+    LimitePago      INT            NOT NULL,
     Descuento       FLOAT(8, 0)    DEFAULT 0 NOT NULL,
     TotalGeneral    FLOAT(8, 0)    NOT NULL,
     TipoPago        VARCHAR(75)    NOT NULL,
@@ -516,13 +606,38 @@ CREATE TABLE Venta(
 --
 
 ALTER TABLE BitácoraERP ADD CONSTRAINT RefUsuarios62 
-    FOREIGN KEY (IdPerfiles, IdUsuarios, Clave)
-    REFERENCES Usuarios(IdUsuarios, IdPerfiles, Clave)
+    FOREIGN KEY (IdPerfiles, IdUsuarios)
+    REFERENCES Usuarios(IdUsuarios, IdPerfiles)
 ;
 
 ALTER TABLE BitácoraERP ADD CONSTRAINT RefErroresERP64 
     FOREIGN KEY (IdErroresERP)
     REFERENCES ErroresERP(IdErroresERP)
+;
+
+
+-- 
+-- TABLE: Cuenta 
+--
+
+ALTER TABLE Cuenta ADD CONSTRAINT RefPersonal76 
+    FOREIGN KEY (Clave)
+    REFERENCES Personal(Clave)
+;
+
+ALTER TABLE Cuenta ADD CONSTRAINT RefBanco77 
+    FOREIGN KEY (BancoID)
+    REFERENCES Banco(BancoID)
+;
+
+
+-- 
+-- TABLE: CxC 
+--
+
+ALTER TABLE CxC ADD CONSTRAINT RefDetalleVenta92 
+    FOREIGN KEY (IDDetalle)
+    REFERENCES DetalleVenta(IDDetalle)
 ;
 
 
@@ -560,14 +675,34 @@ ALTER TABLE Documentos ADD CONSTRAINT RefProveedores22
 -- TABLE: Incidencia 
 --
 
-ALTER TABLE Incidencia ADD CONSTRAINT RefTipoIncidencia52 
+ALTER TABLE Incidencia ADD CONSTRAINT RefTipoIncidencia79 
     FOREIGN KEY (TipoIncidenciaID)
     REFERENCES TipoIncidencia(TipoIncidenciaID)
 ;
 
-ALTER TABLE Incidencia ADD CONSTRAINT RefPersonal53 
-    FOREIGN KEY (Clave)
-    REFERENCES Personal(Clave)
+
+-- 
+-- TABLE: Movimientos 
+--
+
+ALTER TABLE Movimientos ADD CONSTRAINT RefProductos94 
+    FOREIGN KEY (ID)
+    REFERENCES Productos(ID)
+;
+
+
+-- 
+-- TABLE: Nomina 
+--
+
+ALTER TABLE Nomina ADD CONSTRAINT RefPeriodo80 
+    FOREIGN KEY (PeriodoID)
+    REFERENCES Periodo(PeriodoID)
+;
+
+ALTER TABLE Nomina ADD CONSTRAINT RefEstatus86 
+    FOREIGN KEY (EstatusID)
+    REFERENCES Estatus(EstatusID)
 ;
 
 
@@ -575,24 +710,24 @@ ALTER TABLE Incidencia ADD CONSTRAINT RefPersonal53
 -- TABLE: NominaDetalle 
 --
 
-ALTER TABLE NominaDetalle ADD CONSTRAINT RefSucursal55 
-    FOREIGN KEY (SucursalID)
-    REFERENCES Sucursal(SucursalID)
-;
-
-ALTER TABLE NominaDetalle ADD CONSTRAINT RefNomina56 
+ALTER TABLE NominaDetalle ADD CONSTRAINT RefNomina81 
     FOREIGN KEY (NominaID)
     REFERENCES Nomina(NominaID)
 ;
 
-ALTER TABLE NominaDetalle ADD CONSTRAINT RefIncidencia57 
-    FOREIGN KEY (IncidenciaID, TipoIncidenciaID, Clave)
-    REFERENCES Incidencia(IncidenciaID, TipoIncidenciaID, Clave)
+ALTER TABLE NominaDetalle ADD CONSTRAINT RefSucursal82 
+    FOREIGN KEY (SucursalID)
+    REFERENCES Sucursal(SucursalID)
 ;
 
-ALTER TABLE NominaDetalle ADD CONSTRAINT RefPersonal58 
-    FOREIGN KEY (Clave)
-    REFERENCES Personal(Clave)
+ALTER TABLE NominaDetalle ADD CONSTRAINT RefConceptosNomina83 
+    FOREIGN KEY (ConceptoID)
+    REFERENCES ConceptosNomina(ConceptoID)
+;
+
+ALTER TABLE NominaDetalle ADD CONSTRAINT RefIncidencia89 
+    FOREIGN KEY (IncidenciaID)
+    REFERENCES Incidencia(IncidenciaID)
 ;
 
 
@@ -601,8 +736,8 @@ ALTER TABLE NominaDetalle ADD CONSTRAINT RefPersonal58
 --
 
 ALTER TABLE Notificaciones ADD CONSTRAINT RefUsuarios72 
-    FOREIGN KEY (IdUsuarios, IdPerfiles, Clave)
-    REFERENCES Usuarios(IdUsuarios, IdPerfiles, Clave)
+    FOREIGN KEY (IdUsuarios, IdPerfiles)
+    REFERENCES Usuarios(IdUsuarios, IdPerfiles)
 ;
 
 
@@ -625,9 +760,29 @@ ALTER TABLE PerfilesPermisos ADD CONSTRAINT RefPermisos69
 -- TABLE: Periodo 
 --
 
-ALTER TABLE Periodo ADD CONSTRAINT RefTipoPeriodo51 
+ALTER TABLE Periodo ADD CONSTRAINT RefTipoPeriodo75 
     FOREIGN KEY (TipoPeriodoID)
     REFERENCES TipoPeriodo(TipoPeriodoID)
+;
+
+ALTER TABLE Periodo ADD CONSTRAINT RefEstatus85 
+    FOREIGN KEY (EstatusID)
+    REFERENCES Estatus(EstatusID)
+;
+
+
+-- 
+-- TABLE: Personal 
+--
+
+ALTER TABLE Personal ADD CONSTRAINT RefEstatus84 
+    FOREIGN KEY (EstatusID)
+    REFERENCES Estatus(EstatusID)
+;
+
+ALTER TABLE Personal ADD CONSTRAINT RefJornada88 
+    FOREIGN KEY (JornadaID)
+    REFERENCES Jornada(JornadaID)
 ;
 
 
@@ -662,17 +817,27 @@ ALTER TABLE Productos_Proveedores ADD CONSTRAINT RefProveedores19
 
 
 -- 
+-- TABLE: Sucursal 
+--
+
+ALTER TABLE Sucursal ADD CONSTRAINT RefEstatus87 
+    FOREIGN KEY (EstatusID)
+    REFERENCES Estatus(EstatusID)
+;
+
+
+-- 
 -- TABLE: Usuarios 
 --
+
+ALTER TABLE Usuarios ADD CONSTRAINT RefPersonal91 
+    FOREIGN KEY (Clave)
+    REFERENCES Personal(Clave)
+;
 
 ALTER TABLE Usuarios ADD CONSTRAINT RefPerfiles63 
     FOREIGN KEY (IdPerfiles)
     REFERENCES Perfiles(IdPerfiles)
-;
-
-ALTER TABLE Usuarios ADD CONSTRAINT RefPersonal71 
-    FOREIGN KEY (Clave)
-    REFERENCES Personal(Clave)
 ;
 
 
@@ -680,7 +845,7 @@ ALTER TABLE Usuarios ADD CONSTRAINT RefPersonal71
 -- TABLE: Vacaciones 
 --
 
-ALTER TABLE Vacaciones ADD CONSTRAINT RefPersonal54 
+ALTER TABLE Vacaciones ADD CONSTRAINT RefPersonal78 
     FOREIGN KEY (Clave)
     REFERENCES Personal(Clave)
 ;
@@ -690,14 +855,14 @@ ALTER TABLE Vacaciones ADD CONSTRAINT RefPersonal54
 -- TABLE: Venta 
 --
 
-ALTER TABLE Venta ADD CONSTRAINT RefPersonal59 
-    FOREIGN KEY (Clave)
-    REFERENCES Personal(Clave)
-;
-
 ALTER TABLE Venta ADD CONSTRAINT RefClientes38 
     FOREIGN KEY (IDCliente)
     REFERENCES Clientes(IDCliente)
+;
+
+ALTER TABLE Venta ADD CONSTRAINT RefPersonal90 
+    FOREIGN KEY (Clave)
+    REFERENCES Personal(Clave)
 ;
 
 
